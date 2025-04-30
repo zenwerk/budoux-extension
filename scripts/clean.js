@@ -15,10 +15,11 @@
  */
 
 const fs = require('fs');
-const {glob} = require('glob');
+// Use a simple synchronous approach instead of glob
+const path = require('path');
 
-const dirs = ['build', 'dist'];
-const patterns = ['*.crx', '*.zip', '**/Icon[\r]*', '**/desktop.ini'];
+const dirs = ['build', 'dist', 'dist-firefox'];
+const patterns = ['*.crx', '*.zip'];
 
 function logRemoving(file) {
   console.log(`Removing ${file} ...`);
@@ -33,6 +34,7 @@ function isDirectoryExists(dir) {
   }
 }
 
+// Remove directories
 for (const dir of dirs) {
   if (isDirectoryExists(dir)) {
     logRemoving(dir);
@@ -40,12 +42,28 @@ for (const dir of dirs) {
   }
 }
 
-for (const pattern of patterns) {
-  glob(pattern, (err, files) => {
-    if (err) throw err;
-    for (const file of files) {
+// Remove files by extension in current directory
+try {
+  const files = fs.readdirSync('.');
+
+  // Check each file against our patterns
+  files.forEach(file => {
+    const isMatch = patterns.some(pattern => {
+      // Convert glob pattern to regex
+      if (pattern.includes('*')) {
+        const regexPattern = pattern
+          .replace(/\./g, '\\.')
+          .replace(/\*/g, '.*');
+        return new RegExp(`^${regexPattern}$`).test(file);
+      }
+      return file === pattern;
+    });
+
+    if (isMatch) {
       logRemoving(file);
       fs.unlinkSync(file);
     }
   });
+} catch (err) {
+  console.error('Error removing files:', err);
 }

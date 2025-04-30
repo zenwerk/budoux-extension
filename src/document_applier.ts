@@ -82,13 +82,15 @@ export class DocumentApplier {
   }
 
   protected async loadSettings() {
-    if ('chrome' in window && 'storage' in chrome) {
+    // Use browser API if available, fallback to chrome
+    const browserAPI = typeof window.browser !== 'undefined' ? window.browser : chrome;
+    if (browserAPI && 'storage' in browserAPI) {
       await new Promise<void>(resolve => {
-        chrome.storage.sync.get(
+        browserAPI.storage.sync.get(
           {
             separator: this.separator,
           },
-          items => {
+          (items: {separator: string}) => {
             this.separator = items.separator;
             resolve();
           }

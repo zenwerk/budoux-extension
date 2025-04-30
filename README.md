@@ -1,7 +1,8 @@
 [![CI](https://github.com/google/budoux-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/google/budoux-extension/actions/workflows/ci.yml)
+[![Lint](https://badgen.net/github/checks/google/budoux-extension/lint)](
 [![Dependencies](https://badgen.net/github/dependabot/google/budoux-extension)](https://github.com/google/budoux-extension/network/updates)
 
-# BudouX Chrome Extension
+# BudouX Browser Extension
 
 This extension applies the phrase-based line breaking
 or the Japanese [Wakachi-gaki] style line breaking
@@ -20,10 +21,24 @@ Please see the [BudouX] for more details of the engine.
 
 # Install
 
+## Chrome
 This extension is available to install at the [Chrome Web Store].
 
-To install local builds,
-please refer to the [Unpacked extension tests] section below.
+## Firefox
+This extension is now compatible with Firefox. To build and install it for Firefox:
+
+```sh
+npm run zip:firefox
+```
+
+Then install it in Firefox:
+1. Open Firefox
+2. Navigate to `about:addons`
+3. Click the gear icon and select "Install Add-on From File..."
+4. Select the `budoux-firefox.zip` file from the project directory
+
+## Local Development
+To install local builds, please refer to the [Unpacked extension tests] section below.
 
 # Development
 
@@ -64,6 +79,7 @@ Then open [`test.html`] in the browser.
 ### Unpacked extension tests
 [Unpacked extension tests]: #unpacked-extension-tests
 
+#### Chrome
 [Build] the unpacked directory:
 ```sh
 npm run build
@@ -73,6 +89,17 @@ Then install the extension using the following steps:
 2. Open the Extension Management page by navigating to `chrome://extensions`.
 3. Enable Developer Mode by clicking the toggle switch next to **Developer mode**.
 4. Click the **Load unpacked** button and select the `dist` directory.
+
+#### Firefox
+Build the Firefox version:
+```sh
+npm run dist:firefox
+```
+Then install the extension using the following steps:
+1. Open Firefox.
+2. Navigate to `about:debugging#/runtime/this-firefox`.
+3. Click **Load Temporary Add-on**.
+4. Select any file from the `dist-firefox` directory.
 
 # Disclaimer
 
