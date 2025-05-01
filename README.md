@@ -1,7 +1,3 @@
-[![CI](https://github.com/google/budoux-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/google/budoux-extension/actions/workflows/ci.yml)
-[![Lint](https://badgen.net/github/checks/google/budoux-extension/lint)](
-[![Dependencies](https://badgen.net/github/dependabot/google/budoux-extension)](https://github.com/google/budoux-extension/network/updates)
-
 # BudouX Browser Extension
 
 This extension applies the phrase-based line breaking
@@ -100,7 +96,3 @@ Then install the extension using the following steps:
 2. Navigate to `about:debugging#/runtime/this-firefox`.
 3. Click **Load Temporary Add-on**.
 4. Select any file from the `dist-firefox` directory.
-
-# Disclaimer
-
-This is not an officially supported Google product.
