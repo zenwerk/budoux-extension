@@ -53,6 +53,7 @@ async function applyBudouX(tab?: chrome.tabs.Tab, frameId?: number) {
   }
 }
 
+// Initialize context menu for right-click on web pages
 browser.runtime.onInstalled.addListener(() => {
   browser.contextMenus.create({
     id: 'BudouX',
@@ -61,7 +62,12 @@ browser.runtime.onInstalled.addListener(() => {
   });
 });
 
+// Handle context menu clicks
 browser.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnClickData, tab?: chrome.tabs.Tab) => {
   await applyBudouX(tab, info.frameId);
 });
-browser.action.onClicked.addListener(applyBudouX);
+
+// For left-click on toolbar icon, directly apply BudouX
+browser.action.onClicked.addListener(async (tab) => {
+  await applyBudouX(tab);
+});
