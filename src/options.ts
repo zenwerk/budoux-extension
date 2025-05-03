@@ -76,12 +76,22 @@ function localizeString(str: string): string {
 }
 
 function localize() {
-  for (const element of document.querySelectorAll(
-    'mwc-button, mwc-formfield'
-  )) {
+  // First collect all elements that need localization
+  const elements = Array.from(document.querySelectorAll('mwc-button, mwc-formfield'));
+
+  // Process each element safely
+  for (const element of elements) {
     const label = element.getAttribute('label');
-    if (label) {
-      element.setAttribute('label', localizeString(label));
+    if (label && label.includes('__MSG_')) {
+      // Extract message key from the format __MSG_keyName__
+      const matches = label.match(/__MSG_(\w+)__/);
+      if (matches && matches[1]) {
+        const messageKey = matches[1];
+        const localizedText = chrome.i18n.getMessage(messageKey) || label;
+
+        // Set the label attribute directly without using innerHTML
+        element.setAttribute('label', localizedText);
+      }
     }
   }
 }

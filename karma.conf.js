@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line no-undef
 module.exports = function (config) {
   config.set({
     basePath: '',
