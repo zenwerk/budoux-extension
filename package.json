@@ -35,18 +35,17 @@
     "@material/mwc-formfield": "^0.27.0",
     "@material/mwc-radio": "^0.27.0",
     "@material/mwc-textfield": "^0.27.0",
-    "budoux": "^0.7.0",
-    "budoux-extension": "file:"
+    "budoux": "^0.7.0"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.0",
-    "@types/chrome": "^0.0.317",
+    "@types/chrome": "^0.1.0",
     "@types/jasmine": "^5.1.0",
     "@types/jsdom": "^21.1.1",
-    "@types/node": "^22.7.9",
+    "@types/node": "^24.0.1",
     "@typescript-eslint/eslint-plugin": "^8.18.2",
     "archiver": "^7.0.1",
-    "commander": "^13.1.0",
+    "commander": "^14.0.0",
     "esbuild": "^0.25.0",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^10.0.2",
