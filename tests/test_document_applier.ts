@@ -36,6 +36,16 @@ describe('DocumentApplier.fromDocument', () => {
     const element = elements[0];
     expect(element.textContent).toMatch(/^\.BudouX {.*}$/);
   });
+
+  it('should add !important to override inline styles', async () => {
+    const doc = documentFromString('<html lang="ja"></html>');
+    const applier = DocumentApplier.fromDocument(doc);
+    await applier.apply();
+    const elements = doc.getElementsByTagName('style');
+    expect(elements.length).toEqual(1);
+    const element = elements[0];
+    expect(element.textContent).toContain('!important');
+  });
 });
 
 describe('DocumentApplier.apply', () => {
@@ -67,6 +77,17 @@ describe('DocumentApplier.apply', () => {
       );
     });
   }
+
+  it('should apply to elements with inline word-break style', async () => {
+    const doc = documentFromString(
+      '<html lang="ja"><body><p style="word-break: normal;">初めてシーンを作成し、コンテンツを追加していくと、やがて「分割すべきではないか」という漠然とした不安から、シーンの一部を別々のシーンとして保存する必要に迫られることがあります。</p></body></html>'
+    );
+    const applier = DocumentApplier.fromDocument(doc);
+    await applier.apply();
+    // Check that BudouX class is added and zero-width spaces are inserted
+    expect(doc.body.innerHTML).toContain('class="BudouX"');
+    expect(doc.body.innerHTML).toContain('\u200B');
+  });
 });
 
 describe('DocumentApplier.normalizeLocale', () => {

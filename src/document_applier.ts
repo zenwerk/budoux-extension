@@ -105,7 +105,7 @@ export class DocumentApplier {
 
     const document = this.document;
     const styleElement = document.createElement('style');
-    styleElement.textContent = `.${this.className} { word-break: keep-all; overflow-wrap: anywhere; }`;
+    styleElement.textContent = `.${this.className} { word-break: keep-all !important; overflow-wrap: anywhere !important; }`;
     document.head.appendChild(styleElement);
   }
 
