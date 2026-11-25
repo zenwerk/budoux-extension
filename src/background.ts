@@ -16,7 +16,7 @@
 
 const assert = console.assert;
 // Use browser API if available, fallback to chrome
-const browser = typeof window.browser !== 'undefined' ? window.browser : chrome;
+const browserAPI = self.browser ?? chrome;
 
 async function applyBudouX(tab?: chrome.tabs.Tab, frameId?: number) {
   const tabId = tab?.id;
@@ -24,51 +24,61 @@ async function applyBudouX(tab?: chrome.tabs.Tab, frameId?: number) {
   if (tabId === undefined) return;
 
   try {
-    // Try Firefox's browser.scripting API first
-    if (typeof browser.scripting !== 'undefined') {
-      const target: chrome.scripting.InjectionTarget = {tabId: tabId,
-      frameIds: frameId !== undefined ? [frameId] : undefined,
-  };
-      await browser.scripting.executeScript({
+    // Try browser.scripting API (works for both Chrome and Firefox with MV3)
+    if (typeof browserAPI.scripting !== 'undefined' && browserAPI.scripting.executeScript) {
+      const target: chrome.scripting.InjectionTarget = {
+        tabId: tabId,
+        frameIds: frameId !== undefined ? [frameId] : undefined,
+      };
+      await browserAPI.scripting.executeScript({
         target: target,
         files: ['content.js'],
       });
-    } else {
-      // Fallback for older Firefox versions
-      await browser.tabs.executeScript(tabId, {
+    } else if (typeof browserAPI.tabs !== 'undefined' && browserAPI.tabs.executeScript) {
+      // Fallback for older Firefox versions with MV2 API
+      await browserAPI.tabs.executeScript(tabId, {
         file: 'content.js',
         frameId: frameId || 0,
       });
+    } else {
+      throw new Error('No compatible script injection API available');
     }
 
-    await browser.action.setBadgeText({
-      text: 'ON',
-      tabId: tabId,
-    });
-    await browser.action.setBadgeBackgroundColor({
-      color: '#00c853',
-      tabId: tabId,
-    });
+    // Use action API (MV3) with fallback to browserAction (MV2)
+    const actionAPI = browserAPI.action || browserAPI.browserAction;
+    if (actionAPI) {
+      await actionAPI.setBadgeText({
+        text: 'ON',
+        tabId: tabId,
+      });
+      await actionAPI.setBadgeBackgroundColor({
+        color: '#00c853',
+        tabId: tabId,
+      });
+    }
   } catch (error) {
     console.error('Error applying BudouX:', error);
   }
 }
 
 // Initialize context menu for right-click on web pages
-browser.runtime.onInstalled.addListener(() => {
-  browser.contextMenus.create({
+browserAPI.runtime.onInstalled.addListener(() => {
+  browserAPI.contextMenus.create({
     id: 'BudouX',
-    title: browser.i18n.getMessage('applyMenuTitle'),
+    title: browserAPI.i18n.getMessage('applyMenuTitle'),
     contexts: ['all'],
   });
 });
 
 // Handle context menu clicks
-browser.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnClickData, tab?: chrome.tabs.Tab) => {
+browserAPI.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnClickData, tab?: chrome.tabs.Tab) => {
   await applyBudouX(tab, info.frameId);
 });
 
 // For left-click on toolbar icon, directly apply BudouX
-browser.action.onClicked.addListener(async (tab) => {
-  await applyBudouX(tab);
-});
+const actionAPI = browserAPI.action || browserAPI.browserAction;
+if (actionAPI && actionAPI.onClicked) {
+  actionAPI.onClicked.addListener(async (tab: chrome.tabs.Tab) => {
+    await applyBudouX(tab);
+  });
+}
