@@ -8,8 +8,8 @@
     rel="stylesheet">
   <style>
     :root {
-      --mdc-theme-primary: #9c27b0;
-      --mdc-theme-secondary: #64dd17;
+      --theme-primary: #9c27b0;
+      --theme-secondary: #64dd17;
       height: 100%;
       user-select: none;
     }
@@ -54,13 +54,75 @@
       margin-top: 2rem;
     }
 
-    mwc-formfield {
+    label {
+      align-items: center;
+      color: rgba(0, 0, 0, .87);
+      cursor: pointer;
+      display: inline-flex;
+      font-family: Roboto, sans-serif;
+      font-size: 0.875rem;
+      gap: 1.25rem;
+      letter-spacing: 0.0178em;
+      min-height: 48px;
+      padding-left: 0.875rem;
       /* Prevent wrapping of label text on e.g., Windows */
       word-break: keep-all;
     }
 
-    mwc-textfield {
+    input[type="radio"] {
+      accent-color: var(--theme-secondary);
+      cursor: pointer;
+      height: 20px;
+      margin: 0;
+      width: 20px;
+    }
+
+    input[type="text"] {
+      border: 1px solid rgba(0, 0, 0, .38);
+      border-radius: 4px;
+      box-sizing: border-box;
+      font: inherit;
+      font-family: Roboto, sans-serif;
+      height: 56px;
       margin-left: 1rem;
+      min-width: 0;
+      padding: 0 16px;
+      width: 200px;
+    }
+
+    input[type="text"]:hover {
+      border-color: rgba(0, 0, 0, .87);
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--theme-primary);
+      box-shadow: inset 0 0 0 1px var(--theme-primary);
+      outline: none;
+    }
+
+    button {
+      background: var(--theme-primary);
+      border: none;
+      border-radius: 4px;
+      box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+      color: #fff;
+      cursor: pointer;
+      font-family: Roboto, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      height: 36px;
+      letter-spacing: 0.0893em;
+      padding: 0 16px;
+      text-transform: uppercase;
+    }
+
+    button:hover {
+      box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--theme-primary);
+      outline-offset: 2px;
     }
 
     .powered-by {
@@ -75,28 +137,32 @@
   <section>
     <h1>BudouX Chrome Extension 🍇</h1>
     <p>
-      <mwc-formfield label="__MSG_insertZwSpace__">
-        <mwc-radio id="zwsp" name="separator" value="&#x200B;"></mwc-radio>
-      </mwc-formfield>
+      <label>
+        <input type="radio" id="zwsp" name="separator" value="&#x200B;">
+        <span data-i18n="insertZwSpace"></span>
+      </label>
     </p>
     <p>
-      <mwc-formfield label="__MSG_insertSpace__">
-        <mwc-radio id="space" name="separator" value=" "></mwc-radio>
-      </mwc-formfield>
+      <label>
+        <input type="radio" id="space" name="separator" value=" ">
+        <span data-i18n="insertSpace"></span>
+      </label>
     </p>
     <p>
-      <mwc-formfield label="__MSG_insertIdeoSpace__">
-        <mwc-radio id="idsp" name="separator" value="&#x3000;"></mwc-radio>
-      </mwc-formfield>
+      <label>
+        <input type="radio" id="idsp" name="separator" value="&#x3000;">
+        <span data-i18n="insertIdeoSpace"></span>
+      </label>
     </p>
     <p>
-      <mwc-formfield label="__MSG_insertUserText__">
-        <mwc-radio id="other" name="separator" value="other"></mwc-radio>
-      </mwc-formfield>
-      <mwc-textfield id="separatorText" outlined></mwc-textfield>
+      <label>
+        <input type="radio" id="other" name="separator" value="other">
+        <span data-i18n="insertUserText"></span>
+      </label>
+      <input type="text" id="separatorText" data-i18n-aria-label="insertUserText">
     </p>
     <p class="button-container">
-      <mwc-button raised id="save" type="submit" label="__MSG_save__"></mwc-button>
+      <button id="save" type="button" data-i18n="save"></button>
       <span class="powered-by">
         Powered by
         <a href="https://github.com/google/budoux" target="_blank">BudouX</a>

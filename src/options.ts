@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-import '@material/mwc-radio';
-import '@material/mwc-button';
-import '@material/mwc-formfield';
-import '@material/mwc-textfield';
-import {Radio} from '@material/mwc-radio';
-import {TextField} from '@material/mwc-textfield';
-import {Button} from '@material/mwc-button';
-
-const zwsp = document.getElementById('zwsp') as Radio;
-const idsp = document.getElementById('idsp') as Radio;
-const space = document.getElementById('space') as Radio;
+const zwsp = document.getElementById('zwsp') as HTMLInputElement;
+const idsp = document.getElementById('idsp') as HTMLInputElement;
+const space = document.getElementById('space') as HTMLInputElement;
 const presets = [zwsp, idsp, space];
-const other = document.getElementById('other') as Radio;
-const separatorText = document.getElementById('separatorText') as TextField;
-const saveButton = document.getElementById('save') as Button;
+const other = document.getElementById('other') as HTMLInputElement;
+const separatorText = document.getElementById(
+  'separatorText'
+) as HTMLInputElement;
+const saveButton = document.getElementById('save') as HTMLButtonElement;
 
 function checkOtherIfNeeded() {
   if (separatorText.value) other.checked = true;
@@ -71,30 +65,17 @@ function restoreOptions() {
   );
 }
 
-function localizeString(str: string): string {
-  return str.replace(/__MSG_(\w+)__/g, (match, name) =>
-    name ? chrome.i18n.getMessage(name) : ''
-  );
-}
-
 function localize() {
-  // First collect all elements that need localization
-  const elements = Array.from(document.querySelectorAll('mwc-button, mwc-formfield'));
-
-  // Process each element safely
-  for (const element of elements) {
-    const label = element.getAttribute('label');
-    if (label && label.includes('__MSG_')) {
-      // Extract message key from the format __MSG_keyName__
-      const matches = label.match(/__MSG_(\w+)__/);
-      if (matches && matches[1]) {
-        const messageKey = matches[1];
-        const localizedText = chrome.i18n.getMessage(messageKey) || label;
-
-        // Set the label attribute directly without using innerHTML
-        element.setAttribute('label', localizedText);
-      }
-    }
+  for (const element of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
+    element.textContent = chrome.i18n.getMessage(element.dataset.i18n!);
+  }
+  for (const element of document.querySelectorAll<HTMLElement>(
+    '[data-i18n-aria-label]'
+  )) {
+    element.setAttribute(
+      'aria-label',
+      chrome.i18n.getMessage(element.dataset.i18nAriaLabel!)
+    );
   }
 }
 
