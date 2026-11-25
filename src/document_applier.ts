@@ -23,7 +23,6 @@ import {
 
 const isDebug = false;
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 function logDebug(...args: any[]) {
   if (isDebug) {
     console.log(...args);
@@ -90,8 +89,10 @@ export class DocumentApplier {
           {
             separator: this.separator,
           },
-          (items: {separator: string}) => {
-            this.separator = items.separator;
+          items => {
+            if (typeof items.separator === 'string') {
+              this.separator = items.separator;
+            }
             resolve();
           }
         );

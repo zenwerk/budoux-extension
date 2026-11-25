@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import archiver from 'archiver';
+import {ZipArchive} from 'archiver';
 import {Command} from 'commander';
 import * as fs from 'fs';
-import * as globModule from 'glob';
+import {glob} from 'glob';
 import * as path from 'path';
 
 const log = console.log;
@@ -34,6 +34,7 @@ class ChromeExtensionPackage {
     program.option('-j --js <dir>', 'JavaScript directory');
     program.option('-z, --zip <zip>', 'ZIP file name');
     program.option('-f, --firefox', 'Create Firefox version');
+    program.option('-v, --version <version>', 'override manifest.json version');
     program.parse(process.argv);
     const options = program.opts();
     const dist_dir = options.dir ?? throwMissingArg('extension directory');
@@ -42,6 +43,9 @@ class ChromeExtensionPackage {
 
     if (js_dir) {
       await this.copy(js_dir, dist_dir, isFirefox);
+    }
+    if (options.version) {
+      await this.updateVersion(dist_dir, options.version);
     }
 
     const zip_path = options.zip;
@@ -76,7 +80,7 @@ class ChromeExtensionPackage {
     ]);
 
     // Locales are copied to the `dist_dir` keeping the tree structure.
-    const localePaths = await globModule.glob('_locales/**/*.json');
+    const localePaths = await glob('_locales/**/*.json');
     const locales: string[][] = localePaths
       .map((name: string) => [name, name]);
 
@@ -133,6 +137,23 @@ class ChromeExtensionPackage {
     }
   }
 
+  async updateVersion(dist_dir: string, version: string) {
+    const normalized = version.replace(/^v/, '');
+    if (!/^\d+(\.\d+){0,3}$/.test(normalized)) {
+      throw new Error(`Invalid Chrome extension version: ${version}`);
+    }
+    const manifest_path = path.join(dist_dir, 'manifest.json');
+    const manifest = JSON.parse(
+      await fs.promises.readFile(manifest_path, 'utf8')
+    );
+    manifest.version = normalized;
+    await fs.promises.writeFile(
+      manifest_path,
+      JSON.stringify(manifest, null, 2) + '\n'
+    );
+    log(`Updated ${manifest_path} version to ${normalized}`);
+  }
+
   async zip(src_dir: string, zip_path: string) {
     if (!fs.existsSync(src_dir)) {
       throw new Error(`Directory not found: ${src_dir}`);
@@ -142,7 +163,7 @@ class ChromeExtensionPackage {
       output.on('close', resolve);
       output.on('end', resolve);
     });
-    const archive = archiver('zip', {
+    const archive = new ZipArchive({
       zlib: {level: 9},
     });
     archive.pipe(output);

@@ -6,5 +6,27 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
-    open-pull-requests-limit: 10
+      interval: "weekly"
+    cooldown:
+      default-days: 3
+      exclude:
+        - 'budoux'
+    groups:
+      dependencies:
+        patterns:
+          - '*'
+        update-types:
+          - "minor"
+          - "patch"
+        exclude-patterns:
+          - 'budoux'
+          - '@types/chrome'
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - '*'
